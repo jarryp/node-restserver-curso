@@ -2,9 +2,13 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const Usuario = require('../models/usuario');
+const { verificacionToken, verificaAdminRole } = require('../middlewares/autenticacion');
 const app = express();
 
-app.get('/usuario', function(req, res) {
+
+
+
+app.get('/usuario', verificacionToken, function(req, res) {
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -34,7 +38,7 @@ app.get('/usuario', function(req, res) {
         })
 });
 
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificacionToken, verificaAdminRole], function(req, res) {
     let body = req.body;
 
     let usuario = new Usuario({
@@ -49,18 +53,21 @@ app.post('/usuario', function(req, res) {
 
     usuario.save((err, usuarioDB) => {
         if (err) {
-            console.log('Error de Registro de Usuario', err.message);
             return res.status(400).json({
                 ok: false,
-                err
+                err: {
+                    message: 'Error de registro de usuario'
+                }
             });
         }
 
-        res.json({
+        console.log('Usuario Agregado!!!');
+
+        return res.json({
             ok: true,
             usuario: usuarioDB
         });
-        console.log('Usuario Agregado!!!');
+
     });
 
     /*
@@ -77,7 +84,7 @@ app.post('/usuario', function(req, res) {
 
 });
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificacionToken, verificaAdminRole], function(req, res) {
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
 
@@ -102,7 +109,7 @@ app.put('/usuario/:id', function(req, res) {
      });*/
 });
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificacionToken, verificaAdminRole], function(req, res) {
     //res.send('Hello World')
     //res.json('Hola DELETE USUARIO!!!')
     let id = req.params.id;

@@ -10,7 +10,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.use(require('./routes/usuario'));
+//configuracion global de rutas
+app.use(require('./routes/index'));
 
 app.get('/', function(req, res) {
     //res.send('Hello World')
