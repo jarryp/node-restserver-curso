@@ -65,7 +65,6 @@ app.get('/producto/:id', (req, res) => {
 app.get('/productos/buscar/:termino', (req, res) => {
     let termino = req.params.termino;
     let regex = new RegExp(termino, 'i');
-
     Producto.find({ nombre: regex })
         .populate('categoria', 'nombre')
         .exec((err, productos) => {
